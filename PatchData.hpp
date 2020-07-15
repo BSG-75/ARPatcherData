@@ -1,8 +1,36 @@
+#pragma once
 #include <filesystem>
 #include <istream>
 #include <string_view>
 #include <vector>
 #include "Escape.hpp"
+
+//DataChunk can represent a chunk inside the "old file" (with length and sourcePosition), or store data inside itself
+//In the second case, sourcePosition == -1 and length == data.size()
+struct DataChunk
+{
+	DataChunk() : length{ 0 }, sourcePosition{ 0 }, data{} {}
+
+	DataChunk(std::size_t length, std::size_t sourcePosition, std::vector<std::uint8_t> data)
+	{
+		if (length > std::numeric_limits<std::uint32_t>::max())
+		{
+			throw std::length_error{ "length too large!" };
+		}
+		if (sourcePosition > std::numeric_limits<std::uint32_t>::max() && sourcePosition != static_cast<std::size_t>(-1))
+		{
+			throw std::length_error{ "sourcePosition too large!" };
+		}
+		this->length = static_cast<std::uint32_t>(length);
+		this->sourcePosition = static_cast<std::uint32_t>(sourcePosition);
+		this->data = std::move(data);
+	}
+
+	std::uint32_t length;
+	std::uint32_t sourcePosition;
+	std::vector<std::uint8_t> data;
+	static constexpr std::size_t lowestReferencedBytesCount = 32;
+};
 
 struct PatchData {
 	int version;
@@ -59,6 +87,26 @@ constexpr auto delimiter = std::string_view{"\r\n"};
 #endif
 
 */
+
+void writeLittleEndianUInt32(std::ostream& out, std::uint32_t value)
+{
+	for (auto i = 0; i < sizeof(value); ++i)
+	{
+		out << static_cast<unsigned char>(value >> (i * CHAR_BIT));
+	}
+}
+
+std::uint32_t readLittleEndianUInt32(std::istream& in)
+{
+	auto result = std::uint32_t{ 0 };
+	for (auto i = 0; i < sizeof(result); ++i)
+	{
+		auto input = unsigned char{};
+		in >> input;
+		result = result | (input << (i * CHAR_BIT));
+	}
+	return result;
+}
 
 template<typename OStream>
 void writeChunks(OStream&& out, const PatchData& patchData)
