@@ -13,11 +13,11 @@ struct DataChunk
 
 	DataChunk(std::size_t length, std::size_t sourcePosition, std::vector<std::uint8_t> data)
 	{
-		if (length > std::numeric_limits<std::uint32_t>::max())
+		if (length > (std::numeric_limits<std::uint32_t>::max)())
 		{
 			throw std::length_error{ "length too large!" };
 		}
-		if (sourcePosition > std::numeric_limits<std::uint32_t>::max() && sourcePosition != static_cast<std::size_t>(-1))
+		if (sourcePosition > (std::numeric_limits<std::uint32_t>::max)() && sourcePosition != static_cast<std::size_t>(-1))
 		{
 			throw std::length_error{ "sourcePosition too large!" };
 		}

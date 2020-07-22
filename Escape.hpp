@@ -28,8 +28,8 @@ struct EscapeData {
 
 EscapeData findBestEscape(const std::vector<std::uint8_t>& source, std::uint8_t toBeEscaped)
 {
-	static_assert(std::numeric_limits<std::uint8_t>::max() < std::numeric_limits<std::size_t>::max());
-	static constexpr auto elementCount = static_cast<std::size_t>(std::numeric_limits<std::uint8_t>::max()) + 1;
+	static_assert((std::numeric_limits<std::uint8_t>::max)() < (std::numeric_limits<std::size_t>::max)());
+	static constexpr auto elementCount = static_cast<std::size_t>((std::numeric_limits<std::uint8_t>::max)()) + 1;
 	auto frequencies = std::array<std::size_t, elementCount>{0};
 	auto accessFrequencies = [&frequencies](std::uint8_t value) -> std::size_t& {
 		return frequencies[static_cast<std::size_t>(value)];
@@ -40,11 +40,11 @@ EscapeData findBestEscape(const std::vector<std::uint8_t>& source, std::uint8_t 
 		++accessFrequencies(element);
 	}
 
-	accessFrequencies(toBeEscaped) = std::numeric_limits<std::size_t>::max();
+	accessFrequencies(toBeEscaped) = (std::numeric_limits<std::size_t>::max)();
 	auto min = static_cast<std::uint8_t>(std::min_element(frequencies.begin(), frequencies.end()) - frequencies.begin());
-	accessFrequencies(min) = std::numeric_limits<std::size_t>::max();
+	accessFrequencies(min) = (std::numeric_limits<std::size_t>::max)();
 	auto second = static_cast<std::uint8_t>(std::min_element(frequencies.begin(), frequencies.end()) - frequencies.begin());
-	accessFrequencies(second) = std::numeric_limits<std::size_t>::max();
+	accessFrequencies(second) = (std::numeric_limits<std::size_t>::max)();
 	auto third = static_cast<std::uint8_t>(std::min_element(frequencies.begin(), frequencies.end()) - frequencies.begin());
 
 	auto result = EscapeData{ toBeEscaped, min, second, third, 0 };
