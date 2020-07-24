@@ -205,7 +205,7 @@ PatchData readChunks(IStream&& in)
 	auto readUnsignedInt8Bit = [](std::istream& in) {
 		auto result = unsigned{};
 		in >> result;
-		if (result > std::numeric_limits<std::uint8_t>::max())
+		if (result > (std::numeric_limits<std::uint8_t>::max)())
 		{
 			throw std::domain_error{ "Input value too large" };
 		}
